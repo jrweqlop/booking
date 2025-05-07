@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int         @id @default(autoincrement())
+  lineIdUser String      @unique
+  lineName   String
+  name       String?
+  lastname   String?
+  imageUrl   String?
+  email      String?
+  phone      String?
+  role       EnumUser    @default(USER)
+  updatedat  DateTime    @updatedAt
+  createdat  DateTime    @default(now())
+  parentId   Int? // ใช้เพื่อเก็บ ID ของผู้ปกครอง
+  parent     User?       @relation("UserParent", fields: [parentId], references: [id]) // ความสัมพันธ์กับผู้ปกครอง
+  children   User[]      @relation("UserParent") // ความสัมพันธ์กับลูก ๆ
+  UserStudy  UserStudy[]
+}
+
+model Room {
+  id        Int            @id @default(autoincrement())
+  name      String
+  subroom   String?
+  status    EnumRoomStatus @default(AVAILABLE)
+  updatedat DateTime       @updatedAt
+  createdat DateTime       @default(now())
+  Booking   Booking[]
+}
+
+model Booking {
+  id        String            @id
+  title     String
+  roomId    Int?
+  note      String
+  status    EnumBookingStatus @default(ACTIVE)
+  start     DateTime
+  end       DateTime
+  updatedat DateTime          @updatedAt
+  createdat DateTime          @default(now())
+  Room      Room?             @relation(fields: [roomId], references: [id])
+  UserStudy UserStudy[]
+}
+
+model UserStudy {
+  id        Int      @id @default(autoincrement())
+  bookingId String
+  userId    Int?
+  updatedat DateTime @updatedAt
+  createdat DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+  Booking   Booking? @relation(fields: [bookingId], references: [id])
+}
+
+model TransactionStudent {
+  id          Int      @id @default(autoincrement())
+  teacherName String
+  studentName String
+  bookingId   Int
+  timeSlotId  Int
+  roomname    String
+  createdat   DateTime @default(now())
+}
+
+model TransactionTeacher {
+  id         Int      @id @default(autoincrement())
+  name       Int
+  bookingId  Int
+  timeSlotId Int
+  roomname   String
+  createdat  DateTime @default(now())
+}
+
+enum EnumUser {
+  USER
+  TEACHER
+  ADMIN
+}
+
+enum EnumBookingStatus {
+  ACTIVE
+  INACTIVE
+  OTHER
+}
+
+enum EnumRoomStatus {
+  AVAILABLE
+  UNAVAILABLE
+}

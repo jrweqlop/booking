@@ -1,0 +1,29 @@
+{
+  "name": "gendb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prisma-migrate": "npx prisma migrate dev --name init",
+    "prisma-reset": "npx prisma migrate reset",
+    "prisma-deploy": "npx prisma migrate deploy",
+    "prisma-generate": "npx prisma generate",
+    "dev": "ts-node-dev ./src/main.ts",
+    "seed": "ts-node-dev ./prisma/seed"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "prisma": "^6.7.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.7.0",
+    "ts-node-dev": "^2.0.0"
+  }
+}

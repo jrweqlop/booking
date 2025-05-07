@@ -1,0 +1,29 @@
+version: '3.9'
+services:
+  bookingdb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234567890
+      POSTGRES_DB: bookingdb
+    ports:
+      - "6870:5432"
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+  bookingbackend:
+    build: ./booking-api
+    image: booking-api
+    container_name: booking-backend
+    platform: linux/amd64
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://postgres:1234567890@bookingdb:6870/bookingdb?schema=public
+      # - DATABASE_URL=postgresql://root:WXkf1IzJrqmvF3kiVUUtkfbq1YbGq14g@dpg-cvn17r7gi27c73beoba0-a.oregon-postgres.render.com/ecusolarcharge
+    ports:
+      - "7750:4500"
+      - "7755:8081"
+      - "7760:8082"
+    networks:
+      - postgres
+      - redis_network
