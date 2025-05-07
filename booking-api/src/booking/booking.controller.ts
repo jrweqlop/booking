@@ -72,9 +72,13 @@ export class BookingController {
     const result = await this.bookingService.update(where, data);
     return result
   }
-  x
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.bookingService.remove(+id);
-  // }
+
+  @Delete(':id')
+  async remove(@Param('id') id: string): Promise<Booking> {
+    const where: Prisma.BookingWhereUniqueInput = { id }
+    const check = await this.bookingService.findOne(where)
+    if (!check) throw new NotFoundException('No have Booling Id')
+    const result = await this.bookingService.remove(where)
+    return result
+  }
 }

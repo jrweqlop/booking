@@ -33,7 +33,7 @@ export class BookingService {
     });
   }
 
-  async findOne(where): Promise<object | null> {
+  async findOne(where: Prisma.BookingWhereUniqueInput): Promise<object | null> {
     const result = await this.prisma.booking.findUnique({ where, include: { UserStudy: true } })
     return result
   }
@@ -44,8 +44,8 @@ export class BookingService {
     return result
   }
 
-  async remove(where: Prisma.UserStudyWhereUniqueInput): Promise<UserStudy> {
-    const resutl = await this.prisma.userStudy.delete({ where })
+  async remove(where: Prisma.BookingWhereUniqueInput): Promise<Booking> {
+    const resutl = await this.prisma.booking.delete({ where })
     return resutl
   }
 }

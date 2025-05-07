@@ -21,5 +21,5 @@ export class UpdateUserDto {
 
 export class UpdateRoleUserDto {
     @ApiProperty({ enum: EnumUser, default: EnumUser.USER })
-    phone: EnumUser
+    role: EnumUser
 }
