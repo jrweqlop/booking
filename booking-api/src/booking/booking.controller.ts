@@ -1,17 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, NotFoundException, BadRequestException, UseGuards } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Booking, EnumBookingStatus, Prisma, UserStudy } from '@prisma/client';
-import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 import * as dayjs from 'dayjs';
 import { BookingIdGen } from 'src/shared/GenId';
 import { RoomService } from 'src/room/room.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 interface BookingTimeSlot extends Booking {
   UserStudy: UserStudy[]
 }
 
+@ApiBearerAuth()
 @Controller('booking')
 export class BookingController {
   constructor(private readonly bookingService: BookingService,
@@ -43,8 +45,8 @@ export class BookingController {
     const where: Prisma.BookingWhereInput = {
       status: bookingStatus ?? undefined,
       createdat: {
-        gte: dayjs(start).startOf('day').toDate() ?? undefined,
-        lte: dayjs(end).endOf('day').toDate() ?? undefined
+        gte: start ? dayjs(start).startOf('day').toDate() : undefined,
+        lte: end ? dayjs(end).endOf('day').toDate() : undefined
       }
     }
     const result = await this.bookingService.findAll({ where });

@@ -1,13 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, Query, UseGuards } from '@nestjs/common';
 import { UserStudyService } from './user-study.service';
 import { CreateUserStudyDto } from './dto/create-user-study.dto';
-import { UpdateUserStudyDto } from './dto/update-user-study.dto';
-import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiBearerAuth, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 import { Prisma, UserStudy } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
 import { BookingService } from 'src/booking/booking.service';
 import * as dayjs from 'dayjs'
+import { AuthGuard } from 'src/auth/auth.guard';
 
+@ApiBearerAuth()
 @Controller('user-study')
 export class UserStudyController {
   constructor(private readonly userStudyService: UserStudyService,

@@ -1,10 +1,12 @@
-import { Controller, Post, Body, BadRequestException, ForbiddenException, Get, NotFoundException, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException, ForbiddenException, Get, NotFoundException, Param, Patch, Delete, UseGuards } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { ApiBadRequestResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Prisma, Room } from '@prisma/client';
+import { AuthGuard } from 'src/auth/auth.guard';
 
+@ApiBearerAuth()
 @Controller('room')
 export class RoomController {
   constructor(private readonly roomService: RoomService) { }
