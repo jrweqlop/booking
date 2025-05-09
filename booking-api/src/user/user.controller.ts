@@ -5,12 +5,13 @@ import { UpdateRoleUserDto, UpdateUserDto } from './dto/update-user.dto';
 import { ApiBadGatewayResponse, ApiBearerAuth, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EnumUser, Prisma, User } from '@prisma/client';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { Public } from 'src/auth/decorators/public.decorator';
 
-@ApiBearerAuth()
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
+  @ApiBearerAuth()
   @ApiQuery({ type: String, name: 'lineIdUser', required: false })
   @ApiQuery({ type: String, name: 'name', required: false })
   @ApiQuery({ type: String, name: 'lastname', required: false })
@@ -39,6 +40,7 @@ export class UserController {
     return result
   }
 
+  @ApiBearerAuth()
   @ApiQuery({ type: String, name: 'lineIdUser', required: false })
   @Get(':id')
   @ApiOkResponse({ description: 'Success Find User' })
@@ -56,6 +58,7 @@ export class UserController {
     return result
   }
 
+  @ApiBearerAuth()
   @ApiQuery({ type: String, name: 'lineIdUser', required: true })
   @Get('check/')
   async GetUser(
@@ -67,6 +70,7 @@ export class UserController {
     return { status: 200, message: 'User Line ID Register', data: { Register: false } }
   }
 
+  @Public()
   @Post()
   @ApiResponse({ status: 201, description: 'The record has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -80,6 +84,7 @@ export class UserController {
     return result
   }
 
+  @ApiBearerAuth()
   @Patch(":id")
   @ApiOkResponse({ description: "Success Update" })
   @ApiNotFoundResponse({ description: 'Not Found User Id' })
@@ -96,6 +101,7 @@ export class UserController {
     return result
   }
 
+  @ApiBearerAuth()
   @Patch(':id/role')
   @ApiNotFoundResponse({ description: 'Not Found Id' })
   @ApiOkResponse({ description: 'Success Update Role User ID' })
@@ -112,6 +118,7 @@ export class UserController {
     return result
   }
 
+  @ApiBearerAuth()
   @Delete(":id")
   @ApiNoContentResponse()
   @ApiNotFoundResponse({ description: 'Not Found User' })

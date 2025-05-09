@@ -8,18 +8,19 @@ import * as dayjs from 'dayjs';
 import { BookingIdGen } from 'src/shared/GenId';
 import { RoomService } from 'src/room/room.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 interface BookingTimeSlot extends Booking {
   UserStudy: UserStudy[]
 }
 
-@ApiBearerAuth()
 @Controller('booking')
 export class BookingController {
   constructor(private readonly bookingService: BookingService,
     private readonly roomService: RoomService
   ) { }
 
+  @ApiBearerAuth()
   @Post()
   @ApiCreatedResponse({ description: 'Success Create BOoking' })
   async create(@Body() body: CreateBookingDto) {
@@ -32,6 +33,7 @@ export class BookingController {
     return result
   }
 
+  @Public()
   @ApiQuery({ enum: EnumBookingStatus, name: 'bookingStatus', required: false })
   @ApiQuery({ type: Date, name: 'start', required: false })
   @ApiQuery({ type: Date, name: 'end', required: false })
@@ -53,6 +55,7 @@ export class BookingController {
     return result
   }
 
+  @Public()
   @Get(':id')
   @ApiOkResponse({ description: 'Success Find Booking TimeSlot ALl' })
   @ApiNotFoundResponse({ description: 'Not Found Booking ID' })
@@ -63,6 +66,8 @@ export class BookingController {
     return result
   }
 
+
+  @ApiBearerAuth()
   @Patch(':id')
   @ApiOkResponse({ description: 'Success Update Booking' })
   @ApiNotFoundResponse({ description: 'No have Booking ID' })
@@ -75,6 +80,7 @@ export class BookingController {
     return result
   }
 
+  @ApiBearerAuth()
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<Booking> {
     const where: Prisma.BookingWhereUniqueInput = { id }

@@ -30,7 +30,7 @@ export class AuthService {
     const { lineIdUser } = body
     const user = await this.prisma.user.findUnique({ where: { lineIdUser } })
     if (!user) throw new UnauthorizedException()
-    const payload = { sub: user?.lineIdUser, user: user?.name };
+    const payload = { sub: user?.lineIdUser, user: user?.name, role: user?.role };
     const result = {
       access_token: await this.jwtService.signAsync(payload)
     }

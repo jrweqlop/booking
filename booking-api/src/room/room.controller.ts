@@ -5,12 +5,13 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Prisma, Room } from '@prisma/client';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { Public } from 'src/auth/decorators/public.decorator';
 
-@ApiBearerAuth()
 @Controller('room')
 export class RoomController {
   constructor(private readonly roomService: RoomService) { }
 
+  @ApiBearerAuth()
   @Post()
   @ApiCreatedResponse({ description: 'Success Create Room' })
   async create(@Body() body: CreateRoomDto): Promise<Room> {
@@ -20,6 +21,7 @@ export class RoomController {
     return result
   }
 
+  @Public()
   @Get()
   @ApiOkResponse({ description: "Success FindAll Room" })
   @ApiForbiddenResponse({ description: '' })
@@ -29,6 +31,7 @@ export class RoomController {
     return result
   }
 
+  @Public()
   @Get(':id')
   @ApiOkResponse({ description: 'Success Find Room Id' })
   @ApiNotFoundResponse({ description: '' })
@@ -39,6 +42,7 @@ export class RoomController {
     return result
   }
 
+  @ApiBearerAuth()
   @Patch(':id')
   @ApiOkResponse({ description: 'Success Update Room' })
   @ApiBadRequestResponse({ description: 'Fail Update Room' })
@@ -52,7 +56,7 @@ export class RoomController {
     return result
   }
 
-
+  @ApiBearerAuth()
   @Delete(':id')
   @ApiNotFoundResponse({ description: 'No have Room ID' })
   @ApiOkResponse({ description: 'Success Delete Room' })

@@ -14,7 +14,7 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1', app, documentFactory);
 
-  const port = process.env.PORT ?? 4600
+  const port = process.env.PORT ?? 4605
 
   await app.listen(port, () => {
     console.log('booking start port : ', port)
