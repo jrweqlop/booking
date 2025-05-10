@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, Query, UseGuards, BadRequestException } from '@nestjs/common';
 import { UserStudyService } from './user-study.service';
 import { CreateUserStudyDto } from './dto/create-user-study.dto';
 import { ApiBasicAuth, ApiBearerAuth, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
@@ -19,23 +19,28 @@ export class UserStudyController {
   @Post()
   @ApiCreatedResponse({ description: 'Success create User Study' })
   @ApiNotFoundResponse({ description: 'No have Id' })
-  async create(@Body() body: CreateUserStudyDto) {
+  async create(@Body() body: CreateUserStudyDto): Promise<UserStudy> {
     const data: Prisma.UserStudyCreateInput = {
       User: {
-        connect: {
-          id: body.userId
-        }
+        connect: { id: body.userId }
       },
       Booking: {
-        connect: {
-          id: body.bookingId
-        }
+        connect: { id: body.bookingId }
       }
     }
     const checkUser = await this.userService.findOne({ id: +body.userId })
     if (!checkUser) throw new NotFoundException('No have User Id.')
     const checkBooing = await this.bookingService.findOne({ id: body.bookingId })
     if (!checkBooing) throw new NotFoundException('NO have Booking Id.')
+    const where: Prisma.UserStudyWhereInput = {
+      User: { id: body.userId },
+      Booking: { id: body.bookingId }
+    }
+
+    const checkDupicate = await this.userStudyService.findAll({ where })
+    if (checkDupicate.length > 0) {
+      throw new BadRequestException('User has successfully Booking ID')
+    }
     const result = await this.userStudyService.create(data)
     return result
   }
