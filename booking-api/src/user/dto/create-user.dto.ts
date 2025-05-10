@@ -7,6 +7,9 @@ export class CreateUserDto {
     @ApiProperty({ type: String })
     lineName: string
 
+    @ApiProperty({ type: String })
+    imageUrl: string
+
 }
 
 export class ChangeAvatar {

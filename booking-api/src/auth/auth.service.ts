@@ -5,6 +5,15 @@ import { JwtService } from '@nestjs/jwt';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { hours } from '@nestjs/throttler';
+import { EnumUser } from '@prisma/client';
+
+interface jwtType {
+  sub: string
+  user: string | null
+  role: EnumUser
+  iat: Date['getTime'],
+  exp: Date['getTime']
+}
 
 @Injectable()
 export class AuthService {
@@ -21,8 +30,17 @@ export class AuthService {
 
   async GetToken(body: AuthDto) {
     const { lineIdUser } = body
+    const thisUser = await this.prisma.user.findUnique({ where: { lineIdUser } })
+    if (!thisUser) {
+      return null
+    }
     const result = await this.cacheManager.get(lineIdUser) as object | null
     if (!result) return null
+    const { access_token } = result as { access_token: string }
+    const deCode = await this.jwtService.decode(access_token) as jwtType
+    if (thisUser.role !== deCode.role) {
+      return null
+    }
     return result
   }
 

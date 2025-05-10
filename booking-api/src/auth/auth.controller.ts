@@ -22,4 +22,9 @@ export class AuthController {
       return this.authService.signIn(body);
     }
   }
+
+  @Get()
+  async get() {
+    return
+  }
 }
