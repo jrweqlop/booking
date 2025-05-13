@@ -22,10 +22,10 @@ import { hours } from '@nestjs/throttler';
   ],
   controllers: [AuthController],
   providers: [AuthService, PrismaService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AuthGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
   ],
   exports: [AuthService],
 })

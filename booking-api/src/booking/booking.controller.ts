@@ -12,7 +12,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import { UserService } from 'src/user/user.service';
 
 interface BookingTimeSlot extends Booking {
-  UserStudy: UserStudy[]
+  UserStudy?: UserStudy[]
 }
 
 @Controller('booking')
@@ -26,31 +26,13 @@ export class BookingController {
   @Post()
   @ApiCreatedResponse({ description: 'Success Create BOoking' })
   async create(@Body() body: CreateBookingDto) {
-    console.log(body)
-    const where: Prisma.BookingWhereInput = {
-      start: body.start ?? undefined,
-      end: body.end ?? undefined,
-      roomId: body.roomId
-    }
-    console.log(where)
-    const checkCreate = await this.bookingService.findAll({ where })
-    checkCreate.forEach((item) => {
-      console.log(item)
-      console.log('เทียบเวลา : ', dayjs(body.start).diff(dayjs(item.start), 'hour', true))
-      if (body.roomId === item.roomId) {
-        console.log('เวลาชนกัน')
-      } else {
-        console.log('เวลาไม่ชนกัน')
-      }
-    })
-    return checkCreate
-    // const id = BookingIdGen()
-    // const data: Prisma.BookingCreateInput = { ...body, id }
-    // const where: Prisma.RoomWhereUniqueInput = { id: body.roomId }
-    // const check = await this.roomService.findOne(where)
-    // if (!check) throw new BadRequestException('No have Room Id')
-    // const result = await this.bookingService.create(data);
-    // return result
+    const id = BookingIdGen()
+    const data: Prisma.BookingCreateInput = { ...body, id }
+    const where: Prisma.RoomWhereUniqueInput = { id: body.roomId }
+    const check = await this.roomService.findOne(where)
+    if (!check) throw new BadRequestException('No have Room Id')
+    const result = await this.bookingService.create(data);
+    return result
   }
 
   @Public()
@@ -86,6 +68,7 @@ export class BookingController {
   @ApiQuery({ type: String, name: 'roomId', required: false })
   @ApiQuery({ type: Date, name: 'start', required: false })
   @ApiQuery({ type: Date, name: 'end', required: false })
+  @ApiQuery({ type: Boolean, name: 'showStudy', required: false })
   @Get('teacher')
   @ApiOkResponse({ description: 'Success Find Booking TimeSlot ALl' })
   @ApiNotFoundResponse({ description: 'Not Found Booking ID' })
@@ -93,6 +76,7 @@ export class BookingController {
     @Query('bookingId') bookingId: string,
     @Query('teacherId') teacherId: string,
     @Query('roomId') roomId: string,
+    @Query('showStudy') showStudy: string,
     @Query('start') start: Date,
     @Query('end') end: Date
   ): Promise<BookingTimeSlot[]> {
@@ -122,7 +106,7 @@ export class BookingController {
       UserStudy: teacherId ? UserStudy : undefined
     }
     const include: Prisma.BookingInclude = {
-      UserStudy: true
+      UserStudy: showStudy === 'true' ? true : undefined
     }
     const result = await this.bookingService.findAll({ where, include }) as BookingTimeSlot[]
     if (!result) throw new NotFoundException('Not Found Booking ID')
