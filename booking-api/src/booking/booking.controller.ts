@@ -98,11 +98,11 @@ export class BookingController {
       id: bookingId ? bookingId : undefined,
       roomId: roomId ? +roomId : undefined,
       start: start ? {
-        gte: dayjs(start).startOf('day').toDate()
-      } : undefined,
+        gte: dayjs(start).toDate()
+      } : dayjs().startOf('day').toDate(),
       end: end ? {
-        lte: dayjs(end).endOf('day').toDate()
-      } : undefined,
+        lte: dayjs(end).toDate()
+      } : dayjs().endOf('day').toDate(),
       UserStudy: teacherId ? UserStudy : undefined
     }
     const include: Prisma.BookingInclude = {
